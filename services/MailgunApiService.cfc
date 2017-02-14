@@ -624,28 +624,16 @@ component {
 		return result;
 	}
 
-	public boolean function isPostHookValid(
+	public boolean function validatePostHookSignature(
 		  required numeric timestamp
 		, required string  token
 		, required string  signature
 	) {
-		var encryptionKey  = _getApiKey();
-		var encryptionData = arguments.timestamp & arguments.token;
-		var secret         = CreateObject( "java", "javax.crypto.spec.SecretKeySpec" ).Init( encryptionKey.GetBytes(), "HmacSHA256" );
-		var mac            = createObject( "java", "javax.crypto.Mac" ).getInstance( "HmacSHA256" );
+		var encryptionKey       = _getApiKey();
+		var encryptionData      = arguments.timestamp & arguments.token;
+		var calculatedSignature = _hexEncodedSha256( encryptionData, encryptionKey );
 
-		mac.init( secret );
-		var bytes = mac.doFinal(encryptionData.GetBytes());
-		var encryptedHexSignature = "";
-		for( var char in bytes ) {
-			var hexChar = FormatBaseN( char, 16 ).reReplace( "^ffffff", "" );
-			if ( hexChar.len() == 1 ) {
-				hexChar = "0" & hexChar;
-			}
-			encryptedHexSignature &= hexChar;
-		}
-
-		return arguments.signature == encryptedHexSignature;
+		return arguments.signature == calculatedSignature;
 	}
 
 
@@ -843,6 +831,31 @@ component {
 
 	public string function _boolFormat( required boolean bool ){
 	   return LCase( YesNoFormat( arguments.bool ) );
+	}
+
+	public string function _hexEncodedSha256( required string data, required string key ) {
+		var secret = CreateObject( "java", "javax.crypto.spec.SecretKeySpec" ).Init( arguments.key.GetBytes(), "HmacSHA256" );
+		var mac    = createObject( "java", "javax.crypto.Mac" ).getInstance( "HmacSHA256" );
+
+		mac.init( secret );
+
+		return _byteArrayToHex( mac.doFinal( arguments.data.GetBytes() ) );
+
+	}
+
+	public string function _byteArrayToHex( required any byteArray ) {
+		var hexBytes = [];
+		for( var byte in arguments.byteArray ) {
+			var unsignedByte = bitAnd( byte, 255 );
+			var hexChar      = FormatBaseN( unsignedByte, 16 );
+
+			if ( unsignedByte < 16 ) {
+				hexChar = "0" & hexChar;
+			}
+			hexBytes.append( hexChar );
+		}
+
+		return hexBytes.toList( "" );
 	}
 
 	private void function _setBaseUrl( required string baseUrl ) {

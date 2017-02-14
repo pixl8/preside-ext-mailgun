@@ -1,6 +1,6 @@
 component extends="testbox.system.BaseSpec" {
 	public function run(){
-		describe( "isPostHookValid", function() {
+		describe( "validatePostHookSignature", function() {
 			it( "should return true when generating a signature using passed token, timestamp and stored api key matches the provided signature", function(){
 				var service = _getService();
 				var timestamp = 1487089870;
@@ -10,7 +10,7 @@ component extends="testbox.system.BaseSpec" {
 
 				service.$( "_getApiKey", apiKey );
 
-				expect( service.isPostHookValid(
+				expect( service.validatePostHookSignature(
 					  timestamp = timestamp
 					, token     = token
 					, signature = signature
@@ -26,7 +26,7 @@ component extends="testbox.system.BaseSpec" {
 
 				service.$( "_getApiKey", apiKey );
 
-				expect( service.isPostHookValid(
+				expect( service.validatePostHookSignature(
 					  timestamp = timestamp
 					, token     = token
 					, signature = signature
