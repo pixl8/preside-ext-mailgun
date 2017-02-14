@@ -624,6 +624,30 @@ component {
 		return result;
 	}
 
+	public boolean function isPostHookValid(
+		  required numeric timestamp
+		, required string  token
+		, required string  signature
+	) {
+		var encryptionKey  = _getApiKey();
+		var encryptionData = arguments.timestamp & arguments.token;
+		var secret         = CreateObject( "java", "javax.crypto.spec.SecretKeySpec" ).Init( encryptionKey.GetBytes(), "HmacSHA256" );
+		var mac            = createObject( "java", "javax.crypto.Mac" ).getInstance( "HmacSHA256" );
+
+		mac.init( secret );
+		var bytes = mac.doFinal(encryptionData.GetBytes());
+		var encryptedHexSignature = "";
+		for( var char in bytes ) {
+			var hexChar = FormatBaseN( char, 16 ).reReplace( "^ffffff", "" );
+			if ( hexChar.len() == 1 ) {
+				hexChar = "0" & hexChar;
+			}
+			encryptedHexSignature &= hexChar;
+		}
+
+		return arguments.signature == encryptedHexSignature;
+	}
+
 
 	private struct function _restCall(
 		  required string httpMethod

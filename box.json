@@ -19,5 +19,11 @@
         ".travis.yml",
         ".twgit_features_subject",
         "test.sh"
-    ]
+    ],
+    "devDependencies":{
+        "testbox":"2.2.0"
+    },
+    "installPaths":{
+        "testbox":"tests/testbox"
+    }
 }

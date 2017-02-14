@@ -1,0 +1,8 @@
+{
+    "name":"mailguntests",
+    "web":{
+        "http":{
+            "port":"3984"
+        }
+    }
+}
