@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form i18nBaseUri="email.serviceProvider.mailgun:">
+    <tab>
+        <fieldset>
+            <field name="mailgun_api_key"        control="textinput" required="true"  maxLength="50"  />
+            <field name="mailgun_default_domain" control="textinput" required="false" maxLength="255" />
+            <field name="mailgun_test_mode"      control="yesNoSwitch" />
+        </fieldset>
+    </tab>
+</form>
