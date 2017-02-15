@@ -39,7 +39,7 @@ component extends="testbox.system.BaseSpec" {
 	private any function _getService() {
 		variables.mockEmailServiceProviderService = CreateStub();
 
-		var service = new mailgun.services.MailgunApiService(
+		var service = new mailgun.services.MailgunNotificationsService(
 			emailServiceProviderService = mockEmailServiceProviderService
 		);
 
