@@ -16,6 +16,10 @@ component {
 	}
 
 // PUBLIC API METHODS
+	public boolean function processNotification( required string messageId, required string messageEvent ){
+		return true;
+	}
+
 	public boolean function validatePostHookSignature(
 		  required numeric timestamp
 		, required string  token
