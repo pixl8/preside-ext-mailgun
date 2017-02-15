@@ -65,14 +65,158 @@ component extends="testbox.system.BaseSpec" {
 				expect( service.getPresideMessageIdForNotification( postData ) ).toBe( "" );
 			} );
 		} );
+
+		describe( "processNotification", function(){
+			it( "should mark email as delivered when message event = 'delivered'", function(){
+				var service      = _getService();
+				var messageId    = CreateUUId();
+				var messageEvent = "delivered";
+
+				mockEmailLoggingService.$( "markAsDelivered" );
+
+				service.processNotification(
+					  messageId    = messageId
+					, messageEvent = messageEvent
+				);
+
+				var callLog = mockEmailLoggingService.$callLog().markAsDelivered;
+
+				expect( callLog.len() ).toBe( 1, "markAsDelivered() was not called" );
+				expect( callLog[1] ).toBe( { id=messageId } );
+			} );
+
+			it( "should mark email as failed when message event = 'dropped'", function(){
+				var service      = _getService();
+				var messageId    = CreateUUId();
+				var messageEvent = "dropped";
+				var postData     = {
+					  code = 605
+					, description = "Whatever" & CreateUUId()
+				};
+
+				mockEmailLoggingService.$( "markAsFailed" );
+
+				service.processNotification(
+					  messageId    = messageId
+					, messageEvent = messageEvent
+					, postData     = postData
+				);
+
+				var callLog = mockEmailLoggingService.$callLog().markAsFailed;
+
+				expect( callLog.len() ).toBe( 1, "markAsFailed() was not called" );
+				expect( callLog[1] ).toBe( { id=messageId, reason=postData.description, code=postData.code } );
+			} );
+
+			it( "should mark email as hard bounced when message event = 'dropped'", function(){
+				var service      = _getService();
+				var messageId    = CreateUUId();
+				var messageEvent = "bounced";
+				var postData     = {
+					  code = 550
+					, description = "Bounced init" & CreateUUId()
+				};
+
+				mockEmailLoggingService.$( "markAsHardBounced" );
+
+				service.processNotification(
+					  messageId    = messageId
+					, messageEvent = messageEvent
+					, postData     = postData
+				);
+
+				var callLog = mockEmailLoggingService.$callLog().markAsHardBounced;
+
+				expect( callLog.len() ).toBe( 1, "markAsHardBounced() was not called" );
+				expect( callLog[1] ).toBe( { id=messageId, reason=postData.description, code=postData.code } );
+			} );
+
+			it( "should mark email as unsubscribed when message event = 'unsubscribed'", function(){
+				var service      = _getService();
+				var messageId    = CreateUUId();
+				var messageEvent = "unsubscribed";
+
+				mockEmailLoggingService.$( "markAsUnsubscribed" );
+
+				service.processNotification(
+					  messageId    = messageId
+					, messageEvent = messageEvent
+				);
+
+				var callLog = mockEmailLoggingService.$callLog().markAsUnsubscribed;
+
+				expect( callLog.len() ).toBe( 1, "markAsUnsubscribed() was not called" );
+				expect( callLog[1] ).toBe( { id=messageId } );
+			} );
+
+			it( "should mark email as 'marked as spam' when message event = 'complained'", function(){
+				var service      = _getService();
+				var messageId    = CreateUUId();
+				var messageEvent = "complained";
+
+				mockEmailLoggingService.$( "markAsMarkedAsSpam" );
+
+				service.processNotification(
+					  messageId    = messageId
+					, messageEvent = messageEvent
+				);
+
+				var callLog = mockEmailLoggingService.$callLog().markAsMarkedAsSpam;
+
+				expect( callLog.len() ).toBe( 1, "markAsMarkedAsSpam() was not called" );
+				expect( callLog[1] ).toBe( { id=messageId } );
+			} );
+
+			it( "should mark email as 'opened' when message event = 'opened'", function(){
+				var service      = _getService();
+				var messageId    = CreateUUId();
+				var messageEvent = "opened";
+
+				mockEmailLoggingService.$( "markAsOpened" );
+
+				service.processNotification(
+					  messageId    = messageId
+					, messageEvent = messageEvent
+				);
+
+				var callLog = mockEmailLoggingService.$callLog().markAsOpened;
+
+				expect( callLog.len() ).toBe( 1, "markAsOpened() was not called" );
+				expect( callLog[1] ).toBe( { id=messageId } );
+			} );
+
+			it( "should record click when message event = 'clicked'", function(){
+				var service      = _getService();
+				var messageId    = CreateUUId();
+				var messageEvent = "clicked";
+				var postData     = {
+					  url = "https://mylink.com/" & CreateUUId()
+				};
+
+				mockEmailLoggingService.$( "recordClick" );
+
+				service.processNotification(
+					  messageId    = messageId
+					, messageEvent = messageEvent
+					, postData     = postData
+				);
+
+				var callLog = mockEmailLoggingService.$callLog().recordClick;
+
+				expect( callLog.len() ).toBe( 1, "recordClick() was not called" );
+				expect( callLog[1] ).toBe( { id=messageId, link=postData.url } );
+			} );
+		} );
 	}
 
 // private helpers
 	private any function _getService() {
 		variables.mockEmailServiceProviderService = CreateStub();
+		variables.mockEmailLoggingService = CreateStub();
 
 		var service = new mailgun.services.MailgunNotificationsService(
-			emailServiceProviderService = mockEmailServiceProviderService
+			  emailServiceProviderService = mockEmailServiceProviderService
+			, emailLoggingService         = mockEmailLoggingService
 		);
 
 		service = createMock( object=service );

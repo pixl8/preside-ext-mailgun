@@ -7,16 +7,54 @@ component {
 
 	/**
 	 * @emailServiceProviderService.inject emailServiceProviderService
+	 * @emailLoggingService.inject         emailLoggingService
 	 *
 	 */
-	public any function init( required any emailServiceProviderService ) {
+	public any function init(
+		  required any emailServiceProviderService
+		, required any emailLoggingService
+	) {
 		_setEmailServiceProviderService( arguments.emailServiceProviderService );
+		_setEmailLoggingService( arguments.emailLoggingService );
 
 		return this;
 	}
 
 // PUBLIC API METHODS
-	public boolean function processNotification( required string messageId, required string messageEvent ){
+	public boolean function processNotification( required string messageId, required string messageEvent, struct postData={} ){
+		var loggingService = _getEmailLoggingService();
+
+		switch( arguments.messageEvent ) {
+			case "opened":
+				loggingService.markAsOpened( id=arguments.messageId );
+			break;
+			case "delivered":
+				loggingService.markAsDelivered( id=arguments.messageId );
+			break;
+			case "dropped":
+				loggingService.markAsFailed(
+					  id     = arguments.messageId
+					, reason = arguments.postData.description ?: ""
+					, code   = arguments.postData.code        ?: ""
+				);
+			break;
+			case "bounced":
+				loggingService.markAsHardBounced(
+					  id     = arguments.messageId
+					, reason = arguments.postData.description ?: ""
+					, code   = arguments.postData.code        ?: ""
+				);
+			break;
+			case "unsubscribed":
+				loggingService.markAsUnsubscribed( id=arguments.messageId );
+			break;
+			case "complained":
+				loggingService.markAsMarkedAsSpam( id=arguments.messageId );
+			break;
+			case "clicked":
+				loggingService.recordClick( id=arguments.messageId, link=arguments.postData.url ?: "" );
+			break;
+		}
 		return true;
 	}
 
@@ -120,5 +158,12 @@ component {
 	}
 	private void function _setEmailServiceProviderService( required any emailServiceProviderService ) {
 		_emailServiceProviderService = arguments.emailServiceProviderService;
+	}
+
+	private any function _getEmailLoggingService() {
+		return _emailLoggingService;
+	}
+	private void function _setEmailLoggingService( required any emailLoggingService ) {
+		_emailLoggingService = arguments.emailLoggingService;
 	}
 }
