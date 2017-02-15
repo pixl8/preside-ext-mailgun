@@ -1,4 +1,3 @@
-
 #!/bin/bash
 if [[ $TRAVIS_TAG == v* ]] ; then
         cd `dirname $0`;
