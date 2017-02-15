@@ -7,7 +7,6 @@ component {
 
 	/**
 	 * @emailServiceProviderService.inject emailServiceProviderService
-	 *
 	 */
 	public any function init(
 		  required any     emailServiceProviderService
@@ -661,19 +660,18 @@ component {
 					for( i=1; i<=ArrayLen(arguments.getVars[ key ] ); i++ ){
 						httpparam name=key value=arguments.getVars[ key ][ i ] type="uri";
 					}
-				}else{
+				} else {
 					httpparam name=key value=arguments.getVars[ key ] type="uri";
 				}
 			}
 
 			for( key in arguments.files ){
-
 				if( IsArray( arguments.files[ key ] ) ){
-					for( i=1; i<= ArrayLen(arguments.files[ key ] ); i++ ){
-						httpparam name=key value=arguments.files[ key ][ i ] type="file";
+					for( var path in arguments.files[ key ] ){
+						httpparam name=key file=path type="file";
 					}
 				}else{
-					httpparam name=key value=arguments.files[ key ] type="file";
+					httpparam name=key file=arguments.files[ key ] type="file";
 				}
 			}
 
