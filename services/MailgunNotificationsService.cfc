@@ -28,6 +28,45 @@ component {
 		return arguments.signature == calculatedSignature;
 	}
 
+	public string function getPresideMessageIdForNotification( required struct postData ) {
+		var messageId = postData.presideMessageId ?: "";
+
+		if ( Len( Trim( messageId ) ) ) {
+			return messageId;
+		}
+
+		var messageHeaders = parseMessageHeaders( arguments.postData[ "message-headers" ] ?: "" );
+		return messageHeaders[ "X-Message-ID" ] ?: "";
+	}
+
+	public struct function parseMessageHeaders( required string headers ) {
+		var parsed = {};
+		var deserializedHeaders = [];
+		var parseItemValue = function( value ) {
+			if ( IsSimpleValue( value ) ) {
+				return value;
+			}
+			if ( IsArray( value ) && value.len() == 2 ) {
+				return {
+					"#value[1]#" = parseItemValue( value[2] )
+				};
+			}
+
+			return value;
+		}
+
+		try {
+			deserializedHeaders = DeserializeJson( arguments.headers )
+			for( var item in deserializedHeaders ) {
+				parsed[ item[1] ] = parseItemValue( item[ 2 ] );
+			}
+		} catch( any e ) {
+			deserializedHeaders = [];
+		}
+
+		return parsed;
+	}
+
 // PRIVATE HELPERS
 	private string function _getApiKey(){
 		return _getSettings().mailgun_api_key;

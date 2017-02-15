@@ -33,6 +33,38 @@ component extends="testbox.system.BaseSpec" {
 				) ).toBeFalse();
 			} );
 		});
+
+		describe( "getPresideMessageIdForNotification", function(){
+			it( "should return the ID in 'presideMessageId' variable if found in POST data", function(){
+				var service  = _getService();
+				var postData = { test=CreateUUId(), presideMessageId=CreateUUId() };
+
+				expect( service.getPresideMessageIdForNotification( postData ) ).toBe( postData.presideMessageId );
+			} );
+
+			it( "should return X-Message-ID mail header if 'presideMessageId' is not present", function(){
+				var service = _getService();
+				var messageId = CreateUUId();
+				var postData = { test=CreateUUId(), "message-headers"='[["Sender", "test@preside.org"], ["Date", "Tue, 14 Feb 2017 16:31:10 +0000"], ["X-Mailgun-Sending-Ip", "184.173.153.222"], ["X-Mailgun-Sid", "WyI4ZDI4NyIsICJkb21pbmljLndhdHNvbkBwaXhsOC5jby51ayIsICIxMDljMCJd"], ["Received", "by luna.mailgun.net with HTTP; Tue, 14 Feb 2017 16:31:09 +0000"], ["Message-Id", "<20170214163109.97563.12188.A9321BA4@preside.org>"], ["X-Message-ID", "#messageId#"], ["To", "dominic.watson@pixl8.co.uk"], ["From", "test@preside.org"], ["Subject", "Mailgun test"], ["Mime-Version", "1.0"], ["Content-Type", ["multipart/alternative", {"boundary": "b6fc3745c8704ca8b0b839614e9d27be"}]]]'}
+
+				expect( service.getPresideMessageIdForNotification( postData ) ).toBe( messageId );
+			} );
+
+			it( "should return X-Message-ID mail header if 'presideMessageId' is empty string", function(){
+				var service = _getService();
+				var messageId = CreateUUId();
+				var postData = { test=CreateUUId(), presideMessageId="", "message-headers"='[["Sender", "test@preside.org"], ["Date", "Tue, 14 Feb 2017 16:31:10 +0000"], ["X-Mailgun-Sending-Ip", "184.173.153.222"], ["X-Mailgun-Sid", "WyI4ZDI4NyIsICJkb21pbmljLndhdHNvbkBwaXhsOC5jby51ayIsICIxMDljMCJd"], ["Received", "by luna.mailgun.net with HTTP; Tue, 14 Feb 2017 16:31:09 +0000"], ["Message-Id", "<20170214163109.97563.12188.A9321BA4@preside.org>"], ["X-Message-ID", "#messageId#"], ["To", "dominic.watson@pixl8.co.uk"], ["From", "test@preside.org"], ["Subject", "Mailgun test"], ["Mime-Version", "1.0"], ["Content-Type", ["multipart/alternative", {"boundary": "b6fc3745c8704ca8b0b839614e9d27be"}]]]'}
+
+				expect( service.getPresideMessageIdForNotification( postData ) ).toBe( messageId );
+			} );
+
+			it( "should return empty string when neither X-Message-ID or presideMessageId present", function(){
+				var service = _getService();
+				var postData = { test=CreateUUId(), "message-headers"='[["Sender", "test@preside.org"], ["Date", "Tue, 14 Feb 2017 16:31:10 +0000"], ["X-Mailgun-Sending-Ip", "184.173.153.222"], ["X-Mailgun-Sid", "WyI4ZDI4NyIsICJkb21pbmljLndhdHNvbkBwaXhsOC5jby51ayIsICIxMDljMCJd"], ["Received", "by luna.mailgun.net with HTTP; Tue, 14 Feb 2017 16:31:09 +0000"], ["To", "dominic.watson@pixl8.co.uk"], ["From", "test@preside.org"], ["Subject", "Mailgun test"], ["Mime-Version", "1.0"], ["Content-Type", ["multipart/alternative", {"boundary": "b6fc3745c8704ca8b0b839614e9d27be"}]]]'}
+
+				expect( service.getPresideMessageIdForNotification( postData ) ).toBe( "" );
+			} );
+		} );
 	}
 
 // private helpers
