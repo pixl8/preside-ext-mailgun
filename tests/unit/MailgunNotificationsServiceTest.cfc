@@ -108,13 +108,13 @@ component extends="testbox.system.BaseSpec" {
 				expect( callLog[1] ).toBe( { id=messageId, reason=postData.description, code=postData.code } );
 			} );
 
-			it( "should mark email as hard bounced when message event = 'dropped'", function(){
+			it( "should mark email as hard bounced when message event = 'bounced'", function(){
 				var service      = _getService();
 				var messageId    = CreateUUId();
 				var messageEvent = "bounced";
 				var postData     = {
 					  code = 550
-					, description = "Bounced init" & CreateUUId()
+					, error = "Bounced init" & CreateUUId()
 				};
 
 				mockEmailLoggingService.$( "markAsHardBounced" );
@@ -128,7 +128,7 @@ component extends="testbox.system.BaseSpec" {
 				var callLog = mockEmailLoggingService.$callLog().markAsHardBounced;
 
 				expect( callLog.len() ).toBe( 1, "markAsHardBounced() was not called" );
-				expect( callLog[1] ).toBe( { id=messageId, reason=postData.description, code=postData.code } );
+				expect( callLog[1] ).toBe( { id=messageId, reason=postData.error, code=postData.code } );
 			} );
 
 			it( "should mark email as unsubscribed when message event = 'unsubscribed'", function(){
