@@ -41,8 +41,8 @@ component {
 			case "bounced":
 				loggingService.markAsHardBounced(
 					  id     = arguments.messageId
-					, reason = arguments.postData.description ?: ""
-					, code   = arguments.postData.code        ?: ""
+					, reason = arguments.postData.error ?: ""
+					, code   = arguments.postData.code  ?: ""
 				);
 			break;
 			case "unsubscribed":
