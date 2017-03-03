@@ -19,7 +19,7 @@ component {
 				mailgunNotificationsService.processNotification(
 					  messageId    = presideMessageId
 					, messageEvent = messageEvent
-					, formData     = form
+					, postData     = form
 				);
 				event.renderData( type="text", data="Notification of [#messageEvent#] event received and processed for preside message [#presideMessageId#]", statuscode=200 );
 			} else {
