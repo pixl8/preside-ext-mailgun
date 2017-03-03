@@ -7,52 +7,38 @@ component {
 	property name="emailTemplateService" inject="emailTemplateService";
 
 	private boolean function send( struct sendArgs={}, struct settings={} ) {
-		var template            = emailTemplateService.getTemplate( sendArgs.template ?: "" );
-		var tags                = [];
-		var attachments         = sendArgs.attachments ?: [];
-		var mgAttachments       = [];
-		var attachmentsToRemove = [];
+		var template = emailTemplateService.getTemplate( sendArgs.template ?: "" );
 
+		sendArgs.params = sendArgs.params ?: {};
+		sendArgs.params[ "X-Mailgun-Variables" ] = {
+			  name  = "X-Mailgun-Variables"
+			, value =  SerializeJson( { presideMessageId = sendArgs.messageId ?: "" } )
+		};
+
+		if ( IsTrue( settings.mailgun_test_mode ?: "" ) ) {
+			sendArgs.params[ "X-Mailgun-Drop-Message" ] = {
+				  name  = "X-Mailgun-Drop-Message"
+				, value =  "yes"
+			};
+		}
 		if ( Len( Trim( template.name ?: "" ) ) ) {
-			tags.append( template.name );
+			sendArgs.params[ "X-Mailgun-Tag" ] = {
+				  name  = "X-Mailgun-Tag"
+				, value =  template.name
+			};
 		}
-		for( var attachment in attachments ) {
-			var md5sum   = Hash( attachment.binary );
-			var tmpDir   = getTempDirectory() & md5sum & "/";
-			var filePath = tmpDir & attachment.name
-			if ( !IsBoolean( attachment.removeAfterSend ?: "" ) || attachment.removeAfterSend ) {
-				attachmentsToRemove.append( filePath );
-			}
 
-			if ( !FileExists( filePath ) ) {
-				DirectoryCreate( tmpDir, true, true );
-				FileWrite( filePath, attachment.binary );
-			}
-
-			mgAttachments.append( filePath );
-		}
-		var messageId = mailgunApiService.sendMessage(
-			  from            = sendArgs.from
-			, to              = sendArgs.to.toList( ";" )
-			, subject         = sendArgs.subject
-			, text            = sendArgs.textBody
-			, html            = sendArgs.htmlBody
-			, cc              = sendArgs.cc.toList( ";" )
-			, bcc             = sendArgs.bcc.toList( ";" )
-			, customVariables = { presideMessageId = sendArgs.messageId }
-			, tags            = tags
-			, attachments     = mgAttachments
+		var result = runEvent(
+			  event          = "email.serviceProvider.smtp.send"
+			, private        = true
+			, prepostExempt  = true
+			, eventArguments = {
+				  sendArgs = sendArgs
+				, settings = settings
+			  }
 		);
 
-		for( var fileToRemove in attachmentsToRemove ) {
-			try {
-				FileDelete( fileToRemove );
-			} catch ( any e ) {
-				$raiseError( e );
-			}
-		}
-
-		return messageId.len() > 0;
+		return result;
 	}
 
 	private any function validateSettings( required struct settings, required any validationResult ) {
