@@ -20,7 +20,7 @@
         ".travis.yml",
         ".twgit_features_subject",
         "*.sh",
-	"docs"
+        "docs"
     ],
     "devDependencies":{
         "testbox":"2.2.0"
