@@ -64,6 +64,11 @@ component {
 		, required string  signature
 	) {
 		var encryptionKey       = _getApiKey();
+
+		if ( !encryptionKey.len() ) {
+			throw( type="mailgun.api.key.not.configured", message="No API key is configured for the mailgun extension. This prevents the validation of Mailgun POST hooks." );
+		}
+
 		var encryptionData      = arguments.timestamp & arguments.token;
 		var calculatedSignature = _hexEncodedSha256( encryptionData, encryptionKey );
 

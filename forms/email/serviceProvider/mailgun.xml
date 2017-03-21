@@ -7,6 +7,7 @@
 			<field name="username" control="textinput"   required="false" />
 			<field name="password" control="password"    required="false" outputSavedValue="true" />
 
+            <field name="mailgun_api_key"   control="textinput" required="false" />
             <field name="mailgun_test_mode" control="yesNoSwitch" />
         </fieldset>
     </tab>

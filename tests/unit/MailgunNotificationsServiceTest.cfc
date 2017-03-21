@@ -32,6 +32,30 @@ component extends="testbox.system.BaseSpec" {
 					, signature = signature
 				) ).toBeFalse();
 			} );
+
+			it( "should throw a useful error when API key is not configured", function(){
+				var service     = _getService();
+				var timestamp   = 1487089870;
+				var token       = "9859b97624eb842a4a4463ff8138c5b412a086f33569fcb54b";
+				var signature   = "b1b54e561291204fd87e132d5ed99c923c79dfbd8651190f1aed6934efb3931b";
+				var apiKey      = "";
+				var errorThrown = false;
+
+				service.$( "_getApiKey", apiKey );
+
+				try {
+					service.validatePostHookSignature(
+						  timestamp = timestamp
+						, token     = token
+						, signature = signature
+					);
+				} catch( "mailgun.api.key.not.configured" e ) {
+					expect( e.message ).toBe( "No API key is configured for the mailgun extension. This prevents the validation of Mailgun POST hooks." );
+					errorThrown = true;
+				}
+
+				expect( errorThrown ).toBeTrue();
+			} );
 		});
 
 		describe( "getPresideMessageIdForNotification", function(){
