@@ -271,9 +271,10 @@ component {
 	}
 
 
-	public struct function listMailingLists( numeric limit, numeric skip ){
+	public struct function listMailingLists( numeric limit, numeric skip, string page, string lastEmailAddress ){
 		var result  = "";
 		var getVars = {};
+		var uri     = "/lists";
 
 		if ( StructKeyExists( arguments, "limit" ) ) {
 			getVars.limit = arguments.limit;
@@ -281,15 +282,22 @@ component {
 		if ( StructKeyExists( arguments, "skip" ) ) {
 			getVars.skip = arguments.skip;
 		}
+		if ( StructKeyExists( arguments, "page" ) ) {
+			getVars.page = arguments.page;
+			uri &= "/pages";
+		}
+		if ( StructKeyExists( arguments, "lastEmailAddress" ) ) {
+			getVars.address = arguments.lastEmailAddress;
+		}
 
 		result = _restCall(
 			  httpMethod = "GET"
-			, uri        = "/lists"
+			, uri        = uri
 			, domain     = ""
 			, getVars    = getVars
 		);
 
-		if ( StructKeyExists( result, "total_count" ) and StructKeyExists( result, "items" ) ) {
+		if ( IsStruct( result ) and ( StructKeyExists( result, "total_count" ) || StructKeyExists( result, "paging" ) ) and StructKeyExists( result, "items" ) ) {
 			return result;
 		}
 
@@ -410,9 +418,10 @@ component {
 	}
 
 
-	public struct function listMailingListMembers( required string address, numeric limit, numeric skip, boolean subscribed ){
+	public struct function listMailingListMembers( required string address, numeric limit, numeric skip, boolean subscribed, string page, string lastEmailAddress ){
 		var result  = "";
 		var getVars = {};
+		var uri     = "/lists/#arguments.address#/members";
 
 		if ( StructKeyExists( arguments, "limit" ) ) {
 			getVars[ "limit" ] = arguments.limit;
@@ -423,15 +432,22 @@ component {
 		if ( StructKeyExists( arguments, "subscribed" ) ) {
 			getVars[ "subscribed" ] = _boolFormat( arguments.subscribed );
 		}
+		if ( StructKeyExists( arguments, "page" ) ) {
+			getVars[ "page" ] = arguments.page;
+			uri &= "/pages";
+		}
+		if ( StructKeyExists( arguments, "lastEmailAddress" ) ) {
+			getVars[ "address" ] = arguments.lastEmailAddress;
+		}
 
 		result = _restCall(
 			  httpMethod = "GET"
-			, uri        = "/lists/#arguments.address#/members"
+			, uri        = uri
 			, domain     = ""
 			, getVars    = getVars
 		);
 
-		if ( IsStruct( result ) and StructKeyExists( result, "total_count" ) and StructKeyExists( result, "items" ) ) {
+		if ( IsStruct( result ) and ( StructKeyExists( result, "total_count" ) || StructKeyExists( result, "paging" ) ) and StructKeyExists( result, "items" ) ) {
 			return result;
 		}
 
@@ -572,7 +588,7 @@ component {
 	}
 
 
-	public struct function bulkCreateMailingListMembers( required string listAddress, required array members, required boolean subscribed ){
+	public struct function bulkCreateMailingListMembers( required string listAddress, required array members, required boolean subscribed, boolean upsert ){
 		var result        = "";
 		var member        = "";
 		var cleanedMember = {};
@@ -600,6 +616,10 @@ component {
 		}
 
 		postVars.members = SerializeJson( postVars.members );
+
+		if ( StructKeyExists( arguments, "upsert" ) ) {
+			postVars[ "upsert" ] = _boolFormat( arguments.upsert );
+		}
 
 		result = _restCall(
 			  httpMethod = "POST"
@@ -658,10 +678,10 @@ component {
 
 				if( IsArray( arguments.getVars[ key ] ) ){
 					for( i=1; i<=ArrayLen(arguments.getVars[ key ] ); i++ ){
-						httpparam name=key value=arguments.getVars[ key ][ i ] type="uri";
+						httpparam name=key value=arguments.getVars[ key ][ i ] type="url";
 					}
 				} else {
-					httpparam name=key value=arguments.getVars[ key ] type="uri";
+					httpparam name=key value=arguments.getVars[ key ] type="url";
 				}
 			}
 
