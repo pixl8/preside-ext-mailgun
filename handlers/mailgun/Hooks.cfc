@@ -23,7 +23,7 @@ component {
 				);
 				event.renderData( type="text", data="Notification of [#messageEvent#] event received and processed for preside message [#presideMessageId#]", statuscode=200 );
 			} else {
-				event.renderData( type="text", data="Not acceptable: could not identify source preside message", statusCode=406 );
+				event.renderData( type="text", data="Ignored: Could not identify source preside message", statusCode=200 );
 			}
 		} else {
 			event.renderData( type="text", data="Not acceptable: invalid request signature", statusCode=406 );
