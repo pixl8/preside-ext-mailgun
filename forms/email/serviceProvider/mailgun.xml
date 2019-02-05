@@ -9,6 +9,7 @@
 
             <field name="mailgun_api_key"        control="textinput" required="false" />
             <field name="mailgun_api_public_key" control="textinput" required="false" />
+            <field name="mailgun_default_domain" control="textinput" required="false" maxLength="255" />
             <field name="mailgun_test_mode"      control="yesNoSwitch" />
         </fieldset>
     </tab>
