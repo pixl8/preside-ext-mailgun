@@ -31,21 +31,22 @@ component {
 		,  required string subject
 		,  required string text
 		,  required string html
-		,           string cc                = ""
-		,           string bcc               = ""
-		,           array  attachments       = []
-		,           array  inlineAttachments = []
-		,           string domain            = ""
-		,           boolean testMode         = false
-		,           array  tags              = []
-		,           string campaign          = ""
-		,           string dkim              = ""
-		,           string deliveryTime      = ""
-		,           string tracking          = ""
-		,           string clickTracking     = ""
-		,           string openTracking      = ""
-		,           struct customHeaders     = {}
-		,           struct customVariables   = {}
+		,           string cc                 = ""
+		,           string bcc                = ""
+		,           array  attachments        = []
+		,           array  inlineAttachments  = []
+		,           string domain             = ""
+		,           boolean testMode          = false
+		,           array  tags               = []
+		,           string campaign           = ""
+		,           string dkim               = ""
+		,           string deliveryTime       = ""
+		,           string tracking           = ""
+		,           string clickTracking      = ""
+		,           string openTracking       = ""
+		,           struct customHeaders      = {}
+		,           struct customVariables    = {}
+		,           struct recipientVariables = {}
 	){
 
 		var results    = "";
@@ -93,7 +94,7 @@ component {
 
 		if ( IsBoolean( arguments.clickTracking ) ) {
 			postVars[ "o:tracking-clicks" ] = _boolFormat( arguments.clickTracking );
-		} elseif( arguments.clickTracking eq "htmlonly" ) {
+		} else if( arguments.clickTracking eq "htmlonly" ) {
 			postVars[ "o:tracking-clicks" ] = "htmlonly";
 		}
 
@@ -107,6 +108,10 @@ component {
 
 		for( var key in arguments.customVariables ){
 			postVars[ "v:#key#" ] = arguments.customVariables[ key ];
+		}
+
+		if( !structIsEmpty( arguments.recipientVariables ) ){
+			postVars[ "recipient-variables" ] = serializeJSON( arguments.recipientVariables );
 		}
 
 		if ( ArrayLen( arguments.attachments ) ) {
@@ -133,7 +138,6 @@ component {
 			  type    = "unexpected"
 			, message = "Unexpected error processing mail send. Expected an ID of successfully sent mail but instead received [#SerializeJson( result )#]"
 		);
-
 
 	}
 
