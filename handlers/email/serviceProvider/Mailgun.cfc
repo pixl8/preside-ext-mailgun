@@ -28,6 +28,8 @@ component {
 			};
 		}
 
+		settings.use_tls = true;
+
 		var result = runEvent(
 			  event          = "email.serviceProvider.smtp.send"
 			, private        = true

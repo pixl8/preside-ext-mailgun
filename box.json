@@ -1,8 +1,8 @@
 {
     "name":"PresideCMS Extension: Mailgun",
     "type":"preside-extensions",
-    "version":"1.0.15",
-    "location":"https://github.com/pixl8/preside-ext-mailgun/archive/v1.0.15.zip",
+    "version":"$VERSION_NUMBER",
+    "location":"$DOWNLOAD_URL",
     "author":"Pixl8 Interactive",
     "directory":"application/extensions",
     "homepage":"https://github.com/pixl8/preside-ext-mailgun",
@@ -27,5 +27,8 @@
     },
     "installPaths":{
         "testbox":"tests/testbox"
+    },
+    "testbox":{
+        "runner":"http://127.0.0.1:3984/runTests.cfm"
     }
 }
