@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form i18nBaseUri="email.serviceProvider.mailgun:">
     <tab id="default">
-        <fieldset id="default">
-            <field name="mailgun_api_endpoint"   control="textinput"   required="false" default="https://api.mailgun.net/v3" />
+        <fieldset id="smtp">
             <field name="server"   control="textinput"   required="false" default="smtp.mailgun.org" />
 			<field name="port"     control="spinner"     required="false" default="587" minvalue="1" maxValue="99999" />
 			<field name="username" control="textinput"   required="false" />
 			<field name="password" control="password"    required="false" outputSavedValue="true" />
-
+        </fieldset>
+        <fieldset id="api">
+            <field name="mailgun_api_endpoint"   control="textinput"   required="false" default="https://api.mailgun.net/v3" />
             <field name="mailgun_api_key"        control="textinput" required="false" />
             <field name="mailgun_api_public_key" control="textinput" required="false" />
             <field name="mailgun_default_domain" control="textinput" required="false" maxLength="255" />
