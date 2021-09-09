@@ -10,11 +10,9 @@ component {
 	 */
 	public any function init(
 		  required any     emailServiceProviderService
-		,          string  baseUrl       = "https://api.mailgun.net/v3"
 		,          numeric httpsTimeout  = 60
 	) {
 		_setEmailServiceProviderService( arguments.emailServiceProviderService );
-		_setBaseUrl( arguments.baseUrl );
 		_setHttpTimeout( arguments.httpsTimeout );
 
 		return this;
@@ -843,12 +841,11 @@ component {
 	   return LCase( YesNoFormat( arguments.bool ) );
 	}
 
-	private void function _setBaseUrl( required string baseUrl ) {
-		_baseUrl = arguments.baseUrl;
-	}
-
 	private string function _getBaseUrl() {
-		return _baseUrl;
+
+		_baseUrl = _getSettings().mailgun_api_endpoint;
+
+		return len( _baseUrl ) ? _baseUrl : "https://api.mailgun.net/v3" ;
 	}
 
 	private void function _setHttpTimeout( required string httpsTimeout ) {
