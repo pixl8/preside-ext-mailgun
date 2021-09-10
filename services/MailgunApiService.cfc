@@ -830,6 +830,7 @@ component {
 				, mailgun_api_public_key = settings.mailgun_api_public_key ?: ""
 				, mailgun_default_domain = settings.mailgun_default_domain ?: ""
 				, mailgun_test_mode      = settings.mailgun_test_mode      ?: ""
+				, mailgun_api_endpoint   = settings.mailgun_api_endpoint   ?: ""
 			};
 		}
 
